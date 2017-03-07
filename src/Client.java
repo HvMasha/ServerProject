@@ -1,15 +1,18 @@
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 
-/**
- * Created by 14hvostova on 10.02.2017.
- */
 public class Client {
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("localhost",1500);
+        Socket socket = new Socket(args[0],Integer.parseInt(args[1]));
         DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        dataOutputStream.writeUTF("Hi people :3");
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        String str = "";
+        while(true)
+        {
+            str = bufferedReader.readLine();
+            dataOutputStream.writeUTF(str);;
+            if(str.equals("end"))
+                break;
+        }
     }
 }
