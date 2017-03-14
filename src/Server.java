@@ -5,8 +5,25 @@ import java.net.Socket;
 public class Server {
     static int maxSessionCount;
     static int sessionCount = 0;
-    public synchronized static void closeSession() {sessionCount--;}
-    public synchronized static void openSession() {sessionCount++;}
+    static final Object lock = new Object();
+    public static void closeSession() {
+        synchronized (lock){
+            sessionCount--;
+        }
+        lock.notifyAll();
+    }
+    public static void openSession() {
+        synchronized (lock){
+            sessionCount++;
+            if (sessionCount == maxSessionCount) {
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
     public static void main(String[] args) throws IOException {
         try{
             ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));//принимает соединение от клиента
@@ -16,22 +33,20 @@ public class Server {
             catch(IllegalArgumentException e){
                 System.out.println("Illegal argument of session count");
             }
-            while(true){
+            while(true) {
                 Socket socket = serverSocket.accept();
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
-                if(sessionCount==maxSessionCount)
-                {
-                    dataOutputStream.writeUTF("Sorry, server is too busy. Please? try later.");
-                }
-                else{
+                if (sessionCount >= maxSessionCount) {
+                    dataOutputStream.writeUTF("Sorry, server is too busy. Please, wait.");
+
+                } else {
                     openSession();
                     Thread thread = new Thread(new Session(socket));
                     dataOutputStream.writeUTF("");
                     thread.start();
+
                 }
-
-
             }
         }
         catch(IllegalArgumentException e)
