@@ -13,19 +13,15 @@ public class Session implements Runnable {
     public void run() {
         try {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
+            //DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             while (true) {
                 String message = dataInputStream.readUTF();//считываем сообщение от клиента
                 System.out.println(message);
                 if(message.equals("end"))
                 {
-                    System.out.println("Socket is disconnected.");
-                    dataOutputStream.writeUTF("You're disconnected.");
                     break;
                 }
             }
-
         } catch (IOException e) {
             e.getMessage();
         }

@@ -11,23 +11,18 @@ public class Client {
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
-            dataOutputStream.writeUTF("Socket '"+socket.getLocalPort()+"' is connected");
-
+            /*dataOutputStream.writeUTF("Socket '"+socket.getLocalPort()+"' is connected");
             String str = dataInputStream.readUTF();
-            if(str.equals("")) {
-                System.out.println("You're connected.");
-                while (true) {
-                    str = bufferedReader.readLine();
-                    dataOutputStream.writeUTF(str);
-                    if (str.equals("end")) {
-                        System.out.println("You are disconnected.");
-                        break;
-                    }
+            System.out.println("You're connected.");
+            */
+            String str;
+            while (true) {
+                str = bufferedReader.readLine();
+                dataOutputStream.writeUTF(str);
+                if (str.equals("end")) {
+                    System.out.println("You are disconnected.");
+                    break;
                 }
-            }
-            else{
-                System.out.println(str);
-                socket.close();
             }
         }catch (IOException e) {
             e.printStackTrace();
