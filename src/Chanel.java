@@ -22,7 +22,7 @@ public class Chanel{
         }
     }
     public Runnable take(){
-        synchronized (this) {
+        synchronized (lock) {
             while (queue.size() == 0) {//пока кто то не положит значение
                 try {
                     lock.wait();
