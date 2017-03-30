@@ -13,16 +13,50 @@ public class Server {
             lock.notifyAll();
         }
     }*/
+
+
+    /*
+     * Изменения:
+     * 1)Server
+     * a. Create Channel<Runnable>
+     * b. Run Host in new Thread (pass to host created channel)
+     * c. Create ThreadPool
+     * d. Create Dispatcher, start it in new thread (pass to dispatcher channel and threadPool)
+     * 2)Host:
+     * a. Accept connection
+     * b. Put new Session with this connection to channel
+     * 3)Dispatcher
+     * a. Take session from channel
+     * b. Pass it for execution to threadPool
+     *
+     */
     public static void main(String[] args) throws IOException {
         try {
             ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));//Создаем сервер на заданном в арг хосте
             try {
-                maxSessionCount = 2;//Integer.parseInt(args[1]);
+                maxSessionCount = Integer.parseInt(args[1]);
             } catch (IllegalArgumentException e) {
                 System.out.println("Illegal argument of session count");
             }
-            Chanel chanel = new Chanel(maxSessionCount);
-            Dispatcher dispatcher = new Dispatcher(chanel);//Создаем Диспетчера
+            //Create Channel<Runnable>
+            Channel channel = new Channel(maxSessionCount);
+           // Dispatcher dispatcher = new Dispatcher(channel);//Создаем Диспетчера ?????????А как тут вставить threadPool?
+
+            //Run Host in new Thread (pass to host created channel)
+            Host host = new Host(maxSessionCount, channel);
+            Thread hostThread = new Thread();
+            hostThread.start();
+
+            //Create ThreadPool
+            ThreadPool threadPool = new ThreadPool(maxSessionCount);//Или мы сюда другое значение должны ставить?
+
+
+            //Create Dispatcher, start it in new thread (pass to dispatcher channel and threadPool)
+            Dispatcher dispatcher1 = new Dispatcher(channel,threadPool);
+            Thread threadDispatcher = new Thread(dispatcher1);
+            threadDispatcher.start();
+
+            /*
             Thread thread = new Thread(dispatcher);
             thread.start();//Запускаем диспетчер
             while (true) {
@@ -36,19 +70,21 @@ public class Server {
                             e.printStackTrace();
                         }
                     }
-                    chanel.put(new Session(socket));//Кладем в Chanel Session Socket-a
+                    channel.put(new Session(socket));//Кладем в Channel Session Socket-a
                     sessionCount++;
                 }
 
             }
-
+*/
         } catch (IllegalArgumentException e) {
             System.out.println("Введены некорректные значения");
         } catch (Exception ex) {
 
         }
+
     }
 }
+
 
   /* public static void openSession() {
          synchronized (lock){

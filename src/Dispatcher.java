@@ -1,11 +1,12 @@
 public class Dispatcher implements Runnable {
-    private Chanel chanel;
-    Dispatcher(Chanel chanel){
+    private Channel chanel;
+    private ThreadPool threadPool;
+
+    Dispatcher(Channel chanel, ThreadPool threadPool){
         this.chanel = chanel;
+        this.threadPool = threadPool;
     }
-    public void putSession(Runnable session){
-        chanel.put(session);
-    }
+
     @Override
     public void run() {
         while(true){

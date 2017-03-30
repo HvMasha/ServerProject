@@ -1,12 +1,15 @@
 import java.util.LinkedList;
 
-public class Chanel{
+public class Channel {
     private final int maxCount;//кол-во объектов, которые мы готовы принимать(отличается от числа в Server
     private final LinkedList<Runnable> queue = new LinkedList<Runnable>();//наша очередь
     private static final Object lock = new Object();
 
-    public Chanel(int maxCount){
+    public Channel(int maxCount){
         this.maxCount=maxCount;
+    }
+    public int size(){
+        return queue.size();
     }
     void put(Runnable x){
         synchronized (lock){
