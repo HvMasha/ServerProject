@@ -4,15 +4,15 @@ import java.net.Socket;
 
 public class Server {
     private static int maxSessionCount;
-    private static int sessionCount = 0;
+   // private static int sessionCount = 0;
     private static final Object lock = new Object();
 
-    public static void closeSession() {
+    /*public static void closeSession() {
         synchronized (lock) {
             sessionCount--;
             lock.notifyAll();
         }
-    }
+    }*/
     public static void main(String[] args) throws IOException {
         try {
             ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));//Создаем сервер на заданном в арг хосте
@@ -21,12 +21,13 @@ public class Server {
             } catch (IllegalArgumentException e) {
                 System.out.println("Illegal argument of session count");
             }
-            Dispatcher dispatcher = new Dispatcher(new Chanel(maxSessionCount));//Создаем Диспетчера
+            Chanel chanel = new Chanel(maxSessionCount);
+            Dispatcher dispatcher = new Dispatcher(chanel);//Создаем Диспетчера
+            dispatcher.run();//Запускаем диспетчер
             while(true){
                 Socket socket = serverSocket.accept();//Ожидаем, когда к нам подключится Client и создаем Socket для него
-                dispatcher.putSession(new Session(socket));//Кладем в Диспетчер Session Socket-a
+                chanel.put(new Session(socket));//Кладем в Chanel Session Socket-a
             }
-            //Когда запускать диспетчер?
         } catch (IllegalArgumentException e) {
             System.out.println("Введены некорректные значения");
         } catch (Exception ex) {

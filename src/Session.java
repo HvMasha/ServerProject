@@ -26,7 +26,7 @@ public class Session implements Runnable {
             e.getMessage();
         }
         finally {
-            Server.closeSession();
+            //Server.closeSession();
         }
     }
 }
